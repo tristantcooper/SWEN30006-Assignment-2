@@ -4,6 +4,8 @@ package oh_heaven.game;
 
 import ch.aplu.jcardgame.*;
 import ch.aplu.jgamegrid.*;
+import oh_heaven.utility.PropertiesLoader;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.util.*;
@@ -70,8 +72,8 @@ public class Oh_Heaven extends CardGame {
 	 
   private final String version = "1.0";
   public final int nbPlayers = 4;
-  public final int nbStartCards = 13;
-  public final int nbRounds = 1;
+  public int nbStartCards = 13;
+  public int nbRounds = 1;
   public final int madeBidBonus = 10;
   private final int handWidth = 400;
   private final int trickWidth = 40;
@@ -289,7 +291,15 @@ private void playRound() {
 }
 
 
-  public void startGame() {
+  public void startGame(Properties properties) {
+	  this.nbStartCards =  Integer.parseInt(properties.getProperty("nbStartCards"));
+	  this.nbRounds = Integer.parseInt(properties.getProperty("rounds"));
+	  this.enforceRules = Boolean.parseBoolean(properties.getProperty("rounds"));;
+	  
+	  
+	  System.out.println(nbStartCards + "number of cards");
+	  String player1 = properties.getProperty("players.0");
+	  System.out.println("player1 value="+player1);
 	  setTitle("Oh_Heaven (V" + version + ") Constructed for UofM SWEN30006 with JGameGrid (www.aplu.ch)");
 	    setStatusText("Initializing...");
 	    initScores();
@@ -335,12 +345,12 @@ private void playRound() {
 	// System.out.println("Working Directory = " + System.getProperty("user.dir"));
 	final Properties properties;
 	if (args == null || args.length == 0) {
-	//  properties = PropertiesLoader.loadPropertiesFile(null);
+	  properties = PropertiesLoader.loadPropertiesFile(null);
 	} else {
-	//      properties = PropertiesLoader.loadPropertiesFile(args[0]);
+	      properties = PropertiesLoader.loadPropertiesFile(args[0]);
 	}
     Oh_Heaven game = getInstance();
-    game.startGame();
+    game.startGame(properties);
   }
 
 }
