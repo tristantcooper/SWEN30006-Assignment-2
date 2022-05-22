@@ -65,11 +65,13 @@ public class Oh_Heaven extends CardGame {
   public boolean rankGreater(Card card1, Card card2) {
 	  return card1.getRankId() < card2.getRankId(); // Warning: Reverse rank order of cards (see comment on enum)
   }
+  
+  private static Oh_Heaven instance = null;
 	 
   private final String version = "1.0";
   public final int nbPlayers = 4;
   public final int nbStartCards = 13;
-  public final int nbRounds = 3;
+  public final int nbRounds = 1;
   public final int madeBidBonus = 10;
   private final int handWidth = 400;
   private final int trickWidth = 40;
@@ -90,7 +92,7 @@ public class Oh_Heaven extends CardGame {
   private Actor[] scoreActors = {null, null, null, null };
   private final Location trickLocation = new Location(350, 350);
   private final Location textLocation = new Location(350, 450);
-  private final int thinkingTime = 2000;
+  private final int thinkingTime = 100;//2000;
   private Hand[] hands;
   private Location hideLocation = new Location(-500, - 500);
   private Location trumpsActorLocation = new Location(50, 50);
@@ -286,36 +288,46 @@ private void playRound() {
 	removeActor(trumpsActor);
 }
 
-  public Oh_Heaven()
+
+  public void startGame() {
+	  setTitle("Oh_Heaven (V" + version + ") Constructed for UofM SWEN30006 with JGameGrid (www.aplu.ch)");
+	    setStatusText("Initializing...");
+	    initScores();
+	    initScore();
+	    for (int i=0; i <nbRounds; i++) {
+	      initTricks();
+	      initRound();
+	      playRound();
+	      updateScores();
+	    };
+	    for (int i=0; i <nbPlayers; i++) updateScore(i);
+	    int maxScore = 0;
+	    for (int i = 0; i <nbPlayers; i++) if (scores[i] > maxScore) maxScore = scores[i];
+	    Set <Integer> winners = new HashSet<Integer>();
+	    for (int i = 0; i <nbPlayers; i++) if (scores[i] == maxScore) winners.add(i);
+	    String winText;
+	    if (winners.size() == 1) {
+	    	winText = "Game over. Winner is player: " +
+	    			winners.iterator().next();
+	    }
+	    else {
+	    	winText = "Game Over. Drawn winners are players: " +
+	    			String.join(", ", winners.stream().map(String::valueOf).collect(Collectors.toSet()));
+	    }
+	    addActor(new Actor("sprites/gameover.gif"), textLocation);
+	    setStatusText(winText);
+	    refresh();
+  }
+  
+  public static Oh_Heaven getInstance() {
+	  if (instance == null) {
+		  instance = new Oh_Heaven();
+	  }
+	  return instance;
+  }
+  private Oh_Heaven()
   {
 	super(700, 700, 30);
-    setTitle("Oh_Heaven (V" + version + ") Constructed for UofM SWEN30006 with JGameGrid (www.aplu.ch)");
-    setStatusText("Initializing...");
-    initScores();
-    initScore();
-    for (int i=0; i <nbRounds; i++) {
-      initTricks();
-      initRound();
-      playRound();
-      updateScores();
-    };
-    for (int i=0; i <nbPlayers; i++) updateScore(i);
-    int maxScore = 0;
-    for (int i = 0; i <nbPlayers; i++) if (scores[i] > maxScore) maxScore = scores[i];
-    Set <Integer> winners = new HashSet<Integer>();
-    for (int i = 0; i <nbPlayers; i++) if (scores[i] == maxScore) winners.add(i);
-    String winText;
-    if (winners.size() == 1) {
-    	winText = "Game over. Winner is player: " +
-    			winners.iterator().next();
-    }
-    else {
-    	winText = "Game Over. Drawn winners are players: " +
-    			String.join(", ", winners.stream().map(String::valueOf).collect(Collectors.toSet()));
-    }
-    addActor(new Actor("sprites/gameover.gif"), textLocation);
-    setStatusText(winText);
-    refresh();
   }
 
   public static void main(String[] args)
@@ -327,7 +339,8 @@ private void playRound() {
 	} else {
 	//      properties = PropertiesLoader.loadPropertiesFile(args[0]);
 	}
-    new Oh_Heaven();
+    Oh_Heaven game = getInstance();
+    game.startGame();
   }
 
 }
