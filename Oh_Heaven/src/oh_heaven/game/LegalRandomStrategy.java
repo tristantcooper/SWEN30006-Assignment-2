@@ -10,19 +10,22 @@ public class LegalRandomStrategy implements INPCStrategy {
 	private Random random = new Random();
 
 	@Override
-	public Card leadDecision(Hand hand) {
+	public Card leadDecision(Hand hand, Suit lead, Suit trump) {
 		return randomCard(hand);
-
 	}
 
 	@Override
-	public Card followDecision(Hand hand) {
-		return randomCard(hand);
-
+	public Card followDecision(Hand hand, Suit lead, Suit trump) {
+		return playLegalCard(hand, lead);
 	}
 	
-	public Card getLegalCards(Hand hand, Suit trump) {
-		ArrayList<Card> legalCards = hand.getCardsWithSuit(trump);
+	public Card playLegalCard(Hand hand, Suit lead) {
+		/**
+		 * Returns a single card of the possible
+		 * legal cards that can be played
+		 * in the current turn.
+		 */
+		ArrayList<Card> legalCards = hand.getCardsWithSuit(lead);
 		int numCards = legalCards.size();
 		if (numCards == 0) {
 			return randomCard(hand);
@@ -30,9 +33,7 @@ public class LegalRandomStrategy implements INPCStrategy {
 		else {
 			int x = random.nextInt(numCards);
 			return legalCards.get(x);
-		}
-		
-		
+		}	
 	}
 	
 	public Card randomCard(Hand hand){
