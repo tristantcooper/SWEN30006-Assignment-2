@@ -1,6 +1,8 @@
 package oh_heaven.game;
 
+import ch.aplu.jcardgame.*;
+
 public interface INPCStrategy {
-	public void leadDecision();
-	public void followDecision();
+	public Card leadDecision(Hand hand);
+	public Card followDecision(Hand hand);
 }
