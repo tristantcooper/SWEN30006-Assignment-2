@@ -69,7 +69,7 @@ public class Oh_Heaven extends CardGame {
   }
   
   private static Oh_Heaven instance = null;
-  ArrayList<Player> players = new ArrayList<Player>();
+  private ArrayList<Player> players = new ArrayList<Player>();
   private final String version = "1.0";
   public final int nbPlayers = 4;
   public final int nbStartCards;
@@ -193,26 +193,35 @@ private void initRound() {
 		hands = new Hand[nbPlayers];
 		for (int i = 0; i < nbPlayers; i++) {
 			   hands[i] = new Hand(deck);
+			   //using our player list
+			   players.get(i).hand = hands[i];
 		}
 		dealingOut(hands, nbPlayers, nbStartCards);
 		 for (int i = 0; i < nbPlayers; i++) {
-			   hands[i].sort(Hand.SortType.SUITPRIORITY, true);
+			  // hands[i].sort(Hand.SortType.SUITPRIORITY, true);
+			   //using our player list
+			   players.get(i).hand.sort(Hand.SortType.SUITPRIORITY, true);
 		 }
 		 // Set up human player for interaction
 		CardListener cardListener = new CardAdapter()  // Human Player plays card
 			    {
-			      public void leftDoubleClicked(Card card) { selected = card; hands[0].setTouchEnabled(false); }
+			      public void leftDoubleClicked(Card card) { selected = card; 
+			      //hands[0].setTouchEnabled(false);
+			      //using player list
+			      players.get(0).hand.setTouchEnabled(false); }
 			    };
-		hands[0].addCardListener(cardListener);
+			    players.get(0).hand.addCardListener(cardListener);
 		 // graphics
 	    RowLayout[] layouts = new RowLayout[nbPlayers];
 	    for (int i = 0; i < nbPlayers; i++) {
 	      layouts[i] = new RowLayout(handLocations[i], handWidth);
 	      layouts[i].setRotationAngle(90 * i);
 	      // layouts[i].setStepDelay(10);
-	      hands[i].setView(this, layouts[i]);
-	      hands[i].setTargetArea(new TargetArea(trickLocation));
-	      hands[i].draw();
+	      //hands[i].setView(this, layouts[i]);
+	      //using list
+	      players.get(i).hand.setView(this, layouts[i]);
+	      players.get(i).hand.setTargetArea(new TargetArea(trickLocation));
+	      players.get(i).hand.draw();
 	    }
 //	    for (int i = 1; i < nbPlayers; i++) // This code can be used to visually hide the cards in a hand (make them face down)
 //	      hands[i].setVerso(true);			// You do not need to use or change this code.
@@ -236,26 +245,26 @@ private void ruleCheck(int nextPlayer, Suit lead) {
 }
 
 private void selectLead(int nextPlayer) {
-	if (0 == nextPlayer) {  // Select lead depending on player type
-		hands[0].setTouchEnabled(true);
+	if (!players.get(nextPlayer).isNPC ) {  // Select lead depending on player type
+		 players.get(nextPlayer).hand.setTouchEnabled(true);
 		setStatus("Player 0 double-click on card to lead.");
 		while (null == selected) delay(100);
     } else {
 		setStatusText("Player " + nextPlayer + " thinking...");
         delay(thinkingTime);
-        selected = randomCard(hands[nextPlayer]);
+        selected = randomCard( players.get(nextPlayer).hand);
     }
 }
 
 private void playFollowing(int nextPlayer) {
-	if (0 == nextPlayer) {
-		hands[0].setTouchEnabled(true);
+	if (!players.get(nextPlayer).isNPC ) {
+		players.get(nextPlayer).hand.setTouchEnabled(true);
 		setStatus("Player 0 double-click on card to follow.");
 		while (null == selected) delay(100);
     } else {
         setStatusText("Player " + nextPlayer + " thinking...");
         delay(thinkingTime);
-        selected = randomCard(hands[nextPlayer]);
+        selected = randomCard( players.get(nextPlayer).hand);
     }
 }
 
@@ -385,7 +394,7 @@ private void playRound() {
 	nbRounds = Integer.parseInt(properties.getProperty("rounds"));
 	enforceRules = Boolean.parseBoolean(properties.getProperty("enforceRules"));
 	
-	for(int i = 0 ; i< nbPlayers ; i++) {
+	for(int i = 0 ; i< nbPlayers; i++) {
 		int playerID = i;
 		String playerType= properties.getProperty("players."+i);
 		players.add(new Player(playerID,playerType));

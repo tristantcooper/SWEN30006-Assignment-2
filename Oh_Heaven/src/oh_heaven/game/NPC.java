@@ -5,9 +5,13 @@ import ch.aplu.jcardgame.Card;
 public class NPC extends Player {
 	INPCStrategy npcStrategy;
 
-	NPC(int id, boolean isNPC, INPCStrategy npcStrategy) {
-		super(id, isNPC);
-		this.npcStrategy = npcStrategy;
+	NPC(int id, String playerType) {
+		super(id, playerType);
+		
+		if(playerType == "legal")
+		this.npcStrategy = new LegalStrategy();
+		else 
+			this.npcStrategy = new SmartStrategy();
 		// TODO Auto-generated constructor stub
 	}
 	

@@ -4,13 +4,19 @@ import ch.aplu.jcardgame.*;
 
 public class Player {
 	
-	public final boolean isNPC;
+	public boolean isNPC;
 	private int id;
 	protected Hand hand;
+	protected String playerType ;
 	
-	Player(int id, boolean isNPC) {
+	Player(int id,  String playerType) {
 		this.id = id;
-		this.isNPC = isNPC;
+		this.playerType = playerType;
+		
+		if (playerType == "human")
+			this.isNPC = false;
+		else this.isNPC = true;
+		
 	}
 	
 	protected void playCard(Card card) {
