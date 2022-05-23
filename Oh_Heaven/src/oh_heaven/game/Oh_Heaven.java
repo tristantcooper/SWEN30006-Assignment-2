@@ -72,8 +72,8 @@ public class Oh_Heaven extends CardGame {
 	 
   private final String version = "1.0";
   public final int nbPlayers = 4;
-  public int nbStartCards = 13;
-  public int nbRounds = 1;
+  public final int nbStartCards;
+  public final int nbRounds;
   public final int madeBidBonus = 10;
   private final int handWidth = 400;
   private final int trickWidth = 40;
@@ -195,6 +195,47 @@ private void initRound() {
 	    // End graphics
  }
 
+private void ruleCheck(int nextPlayer, Suit lead) {
+	if (selected.getSuit() != lead && hands[nextPlayer].getNumberOfCardsWithSuit(lead) > 0) {
+		 // Rule violation
+		 String violation = "Follow rule broken by player " + nextPlayer + " attempting to play " + selected;
+		 System.out.println(violation);
+		 if (enforceRules) 
+			 try {
+				 throw(new BrokeRuleException(violation));
+				} catch (BrokeRuleException e) {
+					e.printStackTrace();
+					System.out.println("A cheating player spoiled the game!");
+					System.exit(0);
+				}  
+	 }
+}
+
+private void selectLead(int nextPlayer) {
+	if (0 == nextPlayer) {  // Select lead depending on player type
+		hands[0].setTouchEnabled(true);
+		setStatus("Player 0 double-click on card to lead.");
+		while (null == selected) delay(100);
+    } else {
+		setStatusText("Player " + nextPlayer + " thinking...");
+        delay(thinkingTime);
+        selected = randomCard(hands[nextPlayer]);
+    }
+	
+}
+
+private void playFollowing(int nextPlayer) {
+	if (0 == nextPlayer) {
+		hands[0].setTouchEnabled(true);
+		setStatus("Player 0 double-click on card to follow.");
+		while (null == selected) delay(100);
+    } else {
+        setStatusText("Player " + nextPlayer + " thinking...");
+        delay(thinkingTime);
+        selected = randomCard(hands[nextPlayer]);
+    }
+}
+
 private void playRound() {
 	// Select and display trump suit
 		final Suit trumps = randomEnum(Suit.class);
@@ -213,15 +254,16 @@ private void playRound() {
 		trick = new Hand(deck);
     	selected = null;
     	// if (false) {
-        if (0 == nextPlayer) {  // Select lead depending on player type
-    		hands[0].setTouchEnabled(true);
-    		setStatus("Player 0 double-click on card to lead.");
-    		while (null == selected) delay(100);
-        } else {
-    		setStatusText("Player " + nextPlayer + " thinking...");
-            delay(thinkingTime);
-            selected = randomCard(hands[nextPlayer]);
-        }
+    	selectLead(nextPlayer);
+        //if (0 == nextPlayer) {  // Select lead depending on player type
+    	//	hands[0].setTouchEnabled(true);
+    	//	setStatus("Player 0 double-click on card to lead.");
+    	//	while (null == selected) delay(100);
+        //} else {
+    	//	setStatusText("Player " + nextPlayer + " thinking...");
+        //    delay(thinkingTime);
+        //    selected = randomCard(hands[nextPlayer]);
+        //}
         // Lead with selected card
 	        trick.setView(this, new RowLayout(trickLocation, (trick.getNumberOfCards()+2)*trickWidth));
 			trick.draw();
@@ -235,35 +277,14 @@ private void playRound() {
 		for (int j = 1; j < nbPlayers; j++) {
 			if (++nextPlayer >= nbPlayers) nextPlayer = 0;  // From last back to first
 			selected = null;
-			// if (false) {
-	        if (0 == nextPlayer) {
-	    		hands[0].setTouchEnabled(true);
-	    		setStatus("Player 0 double-click on card to follow.");
-	    		while (null == selected) delay(100);
-	        } else {
-		        setStatusText("Player " + nextPlayer + " thinking...");
-		        delay(thinkingTime);
-		        selected = randomCard(hands[nextPlayer]);
-	        }
+			playFollowing(nextPlayer);
 	        // Follow with selected card
 		        trick.setView(this, new RowLayout(trickLocation, (trick.getNumberOfCards()+2)*trickWidth));
 				trick.draw();
 				selected.setVerso(false);  // In case it is upside down
 				// Check: Following card must follow suit if possible
-					if (selected.getSuit() != lead && hands[nextPlayer].getNumberOfCardsWithSuit(lead) > 0) {
-						 // Rule violation
-						 String violation = "Follow rule broken by player " + nextPlayer + " attempting to play " + selected;
-						 System.out.println(violation);
-						 if (enforceRules) 
-							 try {
-								 throw(new BrokeRuleException(violation));
-								} catch (BrokeRuleException e) {
-									e.printStackTrace();
-									System.out.println("A cheating player spoiled the game!");
-									System.exit(0);
-								}  
-					 }
-				// End Check
+				ruleCheck(nextPlayer, lead);
+				
 				 selected.transfer(trick, true); // transfer to trick (includes graphic effect)
 				 System.out.println("winning: " + winningCard);
 				 System.out.println(" played: " + selected);
@@ -292,10 +313,6 @@ private void playRound() {
 
 
   public void startGame(Properties properties) {
-	  this.nbStartCards =  Integer.parseInt(properties.getProperty("nbStartCards"));
-	  this.nbRounds = Integer.parseInt(properties.getProperty("rounds"));
-	  this.enforceRules = Boolean.parseBoolean(properties.getProperty("rounds"));;
-	  
 	  
 	  System.out.println(nbStartCards + "number of cards");
 	  String player1 = properties.getProperty("players.0");
@@ -335,9 +352,21 @@ private void playRound() {
 	  }
 	  return instance;
   }
+  
   private Oh_Heaven()
   {
 	super(700, 700, 30);
+	nbStartCards = 13;
+	nbRounds = 2;
+	enforceRules = false;
+  }
+  
+  private Oh_Heaven(Properties properties)
+  {
+	super(700, 700, 30);
+	nbStartCards =  Integer.parseInt(properties.getProperty("nbStartCards"));
+	nbRounds = Integer.parseInt(properties.getProperty("rounds"));
+	enforceRules = Boolean.parseBoolean(properties.getProperty("enforceRules"));;
   }
 
   public static void main(String[] args)
@@ -349,7 +378,8 @@ private void playRound() {
 	} else {
 	      properties = PropertiesLoader.loadPropertiesFile(args[0]);
 	}
-    Oh_Heaven game = getInstance();
+	Oh_Heaven game = new Oh_Heaven(properties);
+    //Oh_Heaven game = getInstance();
     game.startGame(properties);
   }
 
