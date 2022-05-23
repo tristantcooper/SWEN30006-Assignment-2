@@ -191,6 +191,7 @@ private Card selected;
 
 private void initRound() {
 		hands = new Hand[nbPlayers];
+		int humanPlayerIndex;
 		for (int i = 0; i < nbPlayers; i++) {
 			   hands[i] = new Hand(deck);
 			   //using our player list
@@ -208,6 +209,7 @@ private void initRound() {
 			      public void leftDoubleClicked(Card card) { selected = card; 
 			      //hands[0].setTouchEnabled(false);
 			      //using player list
+			      
 			      players.get(0).hand.setTouchEnabled(false); }
 			    };
 			    players.get(0).hand.addCardListener(cardListener);
@@ -229,7 +231,7 @@ private void initRound() {
  }
 
 private void ruleCheck(int nextPlayer, Suit lead) {
-	if (selected.getSuit() != lead && hands[nextPlayer].getNumberOfCardsWithSuit(lead) > 0) {
+	if (selected.getSuit() != lead &&  players.get(nextPlayer).hand.getNumberOfCardsWithSuit(lead) > 0) {
 		 // Rule violation
 		 String violation = "Follow rule broken by player " + nextPlayer + " attempting to play " + selected;
 		 System.out.println(violation);
@@ -245,7 +247,7 @@ private void ruleCheck(int nextPlayer, Suit lead) {
 }
 
 private void selectLead(int nextPlayer) {
-	if (!players.get(nextPlayer).isNPC ) {  // Select lead depending on player type
+	if (!players.get(nextPlayer).isNPC() ) {  // Select lead depending on player type
 		 players.get(nextPlayer).hand.setTouchEnabled(true);
 		setStatus("Player 0 double-click on card to lead.");
 		while (null == selected) delay(100);
@@ -340,9 +342,7 @@ private void playRound() {
 
   public void startGame(Properties properties) {
 	  
-	  System.out.println(nbStartCards + "number of cards");
-	  String player1 = properties.getProperty("players.0");
-	  System.out.println("player1 value="+player1);
+
 	  setTitle("Oh_Heaven (V" + version + ") Constructed for UofM SWEN30006 with JGameGrid (www.aplu.ch)");
 	    setStatusText("Initializing...");
 	    initScores();
@@ -395,9 +395,8 @@ private void playRound() {
 	enforceRules = Boolean.parseBoolean(properties.getProperty("enforceRules"));
 	
 	for(int i = 0 ; i< nbPlayers; i++) {
-		int playerID = i;
 		String playerType= properties.getProperty("players."+i);
-		players.add(new Player(playerID,playerType));
+		players.add(new Player(i,playerType));
 	}
 	
   }

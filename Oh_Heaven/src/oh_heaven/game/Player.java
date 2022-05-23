@@ -6,21 +6,29 @@ public class Player {
 	
 	public boolean isNPC;
 	private int id;
-	protected Hand hand;
+	public Hand hand;
 	protected String playerType ;
 	
-	Player(int id,  String playerType) {
+	public Player(int id,  String playerType) {
 		this.id = id;
 		this.playerType = playerType;
 		
-		if (playerType == "human")
-			this.isNPC = false;
+		if (playerType.equals("human")) {
+			this.isNPC = false;}
 		else this.isNPC = true;
 		
 	}
 	
 	protected void playCard(Card card) {
 		hand.remove(card, false);
+	}
+	
+	public boolean isNPC() {
+		return isNPC;
+	}
+	
+	public String getPlayerType() {
+		return playerType;
 	}
 
 }
