@@ -6,7 +6,7 @@ import java.util.Random;
 import ch.aplu.jcardgame.*;
 import oh_heaven.game.Oh_Heaven.Suit;
 
-public class LegalRandomStrategy implements INPCStrategy {
+public class LegalStrategy implements INPCStrategy {
 	private Random random = new Random();
 	
 	private final GameInfo gameInfo = new GameInfo();

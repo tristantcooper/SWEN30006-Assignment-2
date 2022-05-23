@@ -69,7 +69,7 @@ public class Oh_Heaven extends CardGame {
   }
   
   private static Oh_Heaven instance = null;
-	 
+  ArrayList<Player> players = new ArrayList<Player>();
   private final String version = "1.0";
   public final int nbPlayers = 4;
   public final int nbStartCards;
@@ -383,7 +383,14 @@ private void playRound() {
 	super(700, 700, 30);
 	nbStartCards =  Integer.parseInt(properties.getProperty("nbStartCards"));
 	nbRounds = Integer.parseInt(properties.getProperty("rounds"));
-	enforceRules = Boolean.parseBoolean(properties.getProperty("enforceRules"));;
+	enforceRules = Boolean.parseBoolean(properties.getProperty("enforceRules"));
+	
+	for(int i = 0 ; i< nbPlayers ; i++) {
+		int playerID = i;
+		String playerType= properties.getProperty("players."+i);
+		players.add(new Player(playerID,playerType));
+	}
+	
   }
 
   public static void main(String[] args)
