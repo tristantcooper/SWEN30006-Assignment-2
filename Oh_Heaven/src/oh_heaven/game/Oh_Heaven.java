@@ -106,7 +106,31 @@ private int[] scores = new int[nbPlayers];
 private int[] tricks = new int[nbPlayers];
 private int[] bids = new int[nbPlayers];
 
+private ArrayList<IGameObserver> gameObservers = new ArrayList<IGameObserver>();
+
 Font bigFont = new Font("Serif", Font.BOLD, 36);
+
+public void addObserver(IGameObserver observer) {
+	gameObservers.add(observer);
+}
+
+public void updateTrump(Suit trump) {
+	for (IGameObserver observer : gameObservers) {
+		observer.updateTrump(trump);
+	}
+}
+
+public void updateLead(Suit lead) {
+	for (IGameObserver observer : gameObservers) {
+		observer.updateTrump(lead);
+	}
+}
+
+public void updatePlayedCard(Card card, int playerid) {
+	for (IGameObserver observer : gameObservers) {
+		observer.updatePlayedCard(card, playerid);
+	}
+}
 
 private void initScore() {
 	 for (int i = 0; i < nbPlayers; i++) {
@@ -221,7 +245,6 @@ private void selectLead(int nextPlayer) {
         delay(thinkingTime);
         selected = randomCard(hands[nextPlayer]);
     }
-	
 }
 
 private void playFollowing(int nextPlayer) {
@@ -239,6 +262,7 @@ private void playFollowing(int nextPlayer) {
 private void playRound() {
 	// Select and display trump suit
 		final Suit trumps = randomEnum(Suit.class);
+		updateTrump(trumps);
 		final Actor trumpsActor = new Actor("sprites/"+trumpImage[trumps.ordinal()]);
 	    addActor(trumpsActor, trumpsActorLocation);
 	// End trump suit
@@ -255,21 +279,13 @@ private void playRound() {
     	selected = null;
     	// if (false) {
     	selectLead(nextPlayer);
-        //if (0 == nextPlayer) {  // Select lead depending on player type
-    	//	hands[0].setTouchEnabled(true);
-    	//	setStatus("Player 0 double-click on card to lead.");
-    	//	while (null == selected) delay(100);
-        //} else {
-    	//	setStatusText("Player " + nextPlayer + " thinking...");
-        //    delay(thinkingTime);
-        //    selected = randomCard(hands[nextPlayer]);
-        //}
         // Lead with selected card
 	        trick.setView(this, new RowLayout(trickLocation, (trick.getNumberOfCards()+2)*trickWidth));
 			trick.draw();
 			selected.setVerso(false);
 			// No restrictions on the card being lead
 			lead = (Suit) selected.getSuit();
+			updateLead(lead);
 			selected.transfer(trick, true); // transfer to trick (includes graphic effect)
 			winner = nextPlayer;
 			winningCard = selected;
@@ -278,6 +294,7 @@ private void playRound() {
 			if (++nextPlayer >= nbPlayers) nextPlayer = 0;  // From last back to first
 			selected = null;
 			playFollowing(nextPlayer);
+			updatePlayedCard(selected, nextPlayer);
 	        // Follow with selected card
 		        trick.setView(this, new RowLayout(trickLocation, (trick.getNumberOfCards()+2)*trickWidth));
 				trick.draw();

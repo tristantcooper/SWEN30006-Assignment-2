@@ -8,24 +8,26 @@ import oh_heaven.game.Oh_Heaven.Suit;
 
 public class LegalRandomStrategy implements INPCStrategy {
 	private Random random = new Random();
+	
+	private final GameInfo gameInfo = new GameInfo();
 
 	@Override
-	public Card leadDecision(Hand hand, Suit lead, Suit trump) {
+	public Card leadDecision(Hand hand) {
 		return randomCard(hand);
 	}
 
 	@Override
-	public Card followDecision(Hand hand, Suit lead, Suit trump) {
-		return playLegalCard(hand, lead);
+	public Card followDecision(Hand hand) {
+		return playLegalCard(hand);
 	}
 	
-	public Card playLegalCard(Hand hand, Suit lead) {
+	public Card playLegalCard(Hand hand) {
 		/**
 		 * Returns a single card of the possible
 		 * legal cards that can be played
 		 * in the current turn.
 		 */
-		ArrayList<Card> legalCards = hand.getCardsWithSuit(lead);
+		ArrayList<Card> legalCards = hand.getCardsWithSuit(gameInfo.getLead());
 		int numCards = legalCards.size();
 		if (numCards == 0) {
 			return randomCard(hand);
