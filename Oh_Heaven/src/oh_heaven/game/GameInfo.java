@@ -7,6 +7,7 @@ import oh_heaven.game.Oh_Heaven.Suit;
 
 public class GameInfo {
 
+	private int playerid;
 	private Suit trump;
 	private Suit lead;
 	private ArrayList<OpponentInfo> opponentInfo;
@@ -15,6 +16,15 @@ public class GameInfo {
 		//Stores 4, only updates 3 opponents.
 		// Didn't want to have to map player ids to new values.
 		opponentInfo = new ArrayList<OpponentInfo>(4);
+	}
+	
+	public void playedCard(Card card, int playerid) {
+		if (playerid == this.playerid) {
+			return;
+		}
+		else {
+			opponentInfo.get(playerid).playCard(card);
+		}
 	}
 	
 	public Suit getLead() {

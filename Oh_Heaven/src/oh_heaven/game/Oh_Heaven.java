@@ -110,8 +110,8 @@ private ArrayList<IGameObserver> gameObservers = new ArrayList<IGameObserver>();
 
 Font bigFont = new Font("Serif", Font.BOLD, 36);
 
-public void addObserver(IGameObserver observer) {
-	gameObservers.add(observer);
+public void addObserver(GameInfo gameInfo) {
+	gameObservers.add(new GameObserver(gameInfo));
 }
 
 public void updateTrump(Suit trump) {
