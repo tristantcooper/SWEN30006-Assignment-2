@@ -9,7 +9,11 @@ import oh_heaven.game.Oh_Heaven.Suit;
 public class LegalStrategy implements INPCStrategy {
 	private Random random = new Random();
 	
-	private final GameInfo gameInfo = new GameInfo();
+	private final GameInfo gameInfo;
+	
+	public LegalStrategy() {
+		gameInfo = new GameInfo();
+	}
 
 	@Override
 	public Card leadDecision(Hand hand) {

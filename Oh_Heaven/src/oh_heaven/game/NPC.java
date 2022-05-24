@@ -8,11 +8,13 @@ public class NPC extends Player {
 	NPC(int id, String playerType) {
 		super(id, playerType);
 		
-		if(playerType == "legal")
-		this.npcStrategy = new LegalStrategy();
-		else 
+		if (playerType == "smart") {
 			this.npcStrategy = new SmartStrategy();
-		// TODO Auto-generated constructor stub
+		}
+		
+		else {
+			this.npcStrategy = new LegalStrategy();
+		}
 	}
 	
 	public Card placeLead() {

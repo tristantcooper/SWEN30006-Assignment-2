@@ -4,10 +4,10 @@ import ch.aplu.jcardgame.*;
 
 public class Player {
 	
-	public boolean isNPC;
-	private int id;
-	public Hand hand;
-	protected String playerType ;
+	public final boolean isNPC;
+	public final int id;
+	protected Hand hand;
+	protected final String playerType ;
 	
 	public Player(int id,  String playerType) {
 		this.id = id;
@@ -23,12 +23,15 @@ public class Player {
 		hand.remove(card, false);
 	}
 	
-	public boolean isNPC() {
-		return isNPC;
-	}
-	
 	public String getPlayerType() {
 		return playerType;
 	}
 
+	public Hand getHand() {
+		return hand;
+	}
+
+	public void setHand(Hand hand) {
+		this.hand = hand;
+	}
 }

@@ -132,6 +132,13 @@ public void updatePlayedCard(Card card, int playerid) {
 	}
 }
 
+private void initPlayers(Properties properties) {
+	for(int i = 0 ; i< nbPlayers; i++) {
+		String playerType= properties.getProperty("players."+i);
+		players.add(new Player(i,playerType));
+	}
+}
+
 private void initScore() {
 	 for (int i = 0; i < nbPlayers; i++) {
 		 // scores[i] = 0;
@@ -191,17 +198,16 @@ private Card selected;
 
 private void initRound() {
 		hands = new Hand[nbPlayers];
-		int humanPlayerIndex;
 		for (int i = 0; i < nbPlayers; i++) {
 			   hands[i] = new Hand(deck);
 			   //using our player list
-			   players.get(i).hand = hands[i];
+			   players.get(i).setHand(hands[i]);
 		}
 		dealingOut(hands, nbPlayers, nbStartCards);
 		 for (int i = 0; i < nbPlayers; i++) {
 			  // hands[i].sort(Hand.SortType.SUITPRIORITY, true);
 			   //using our player list
-			   players.get(i).hand.sort(Hand.SortType.SUITPRIORITY, true);
+			   players.get(i).getHand().sort(Hand.SortType.SUITPRIORITY, true);
 		 }
 		 // Set up human player for interaction
 		CardListener cardListener = new CardAdapter()  // Human Player plays card
@@ -210,9 +216,9 @@ private void initRound() {
 			      //hands[0].setTouchEnabled(false);
 			      //using player list
 			      
-			      players.get(0).hand.setTouchEnabled(false); }
+			      players.get(0).getHand().setTouchEnabled(false); }
 			    };
-			    players.get(0).hand.addCardListener(cardListener);
+			    players.get(0).getHand().addCardListener(cardListener);
 		 // graphics
 	    RowLayout[] layouts = new RowLayout[nbPlayers];
 	    for (int i = 0; i < nbPlayers; i++) {
@@ -221,9 +227,9 @@ private void initRound() {
 	      // layouts[i].setStepDelay(10);
 	      //hands[i].setView(this, layouts[i]);
 	      //using list
-	      players.get(i).hand.setView(this, layouts[i]);
-	      players.get(i).hand.setTargetArea(new TargetArea(trickLocation));
-	      players.get(i).hand.draw();
+	      players.get(i).getHand().setView(this, layouts[i]);
+	      players.get(i).getHand().setTargetArea(new TargetArea(trickLocation));
+	      players.get(i).getHand().draw();
 	    }
 //	    for (int i = 1; i < nbPlayers; i++) // This code can be used to visually hide the cards in a hand (make them face down)
 //	      hands[i].setVerso(true);			// You do not need to use or change this code.
@@ -231,7 +237,7 @@ private void initRound() {
  }
 
 private void ruleCheck(int nextPlayer, Suit lead) {
-	if (selected.getSuit() != lead &&  players.get(nextPlayer).hand.getNumberOfCardsWithSuit(lead) > 0) {
+	if (selected.getSuit() != lead &&  players.get(nextPlayer).getHand().getNumberOfCardsWithSuit(lead) > 0) {
 		 // Rule violation
 		 String violation = "Follow rule broken by player " + nextPlayer + " attempting to play " + selected;
 		 System.out.println(violation);
@@ -247,26 +253,26 @@ private void ruleCheck(int nextPlayer, Suit lead) {
 }
 
 private void selectLead(int nextPlayer) {
-	if (!players.get(nextPlayer).isNPC() ) {  // Select lead depending on player type
-		 players.get(nextPlayer).hand.setTouchEnabled(true);
+	if (!players.get(nextPlayer).isNPC) {  // Select lead depending on player type
+		 players.get(nextPlayer).getHand().setTouchEnabled(true);
 		setStatus("Player 0 double-click on card to lead.");
 		while (null == selected) delay(100);
     } else {
 		setStatusText("Player " + nextPlayer + " thinking...");
         delay(thinkingTime);
-        selected = randomCard( players.get(nextPlayer).hand);
+        selected = randomCard( players.get(nextPlayer).getHand());
     }
 }
 
 private void playFollowing(int nextPlayer) {
 	if (!players.get(nextPlayer).isNPC ) {
-		players.get(nextPlayer).hand.setTouchEnabled(true);
+		players.get(nextPlayer).getHand().setTouchEnabled(true);
 		setStatus("Player 0 double-click on card to follow.");
 		while (null == selected) delay(100);
     } else {
         setStatusText("Player " + nextPlayer + " thinking...");
         delay(thinkingTime);
-        selected = randomCard( players.get(nextPlayer).hand);
+        selected = randomCard( players.get(nextPlayer).getHand());
     }
 }
 
@@ -394,10 +400,7 @@ private void playRound() {
 	nbRounds = Integer.parseInt(properties.getProperty("rounds"));
 	enforceRules = Boolean.parseBoolean(properties.getProperty("enforceRules"));
 	
-	for(int i = 0 ; i< nbPlayers; i++) {
-		String playerType= properties.getProperty("players."+i);
-		players.add(new Player(i,playerType));
-	}
+	initPlayers(properties);
 	
   }
 
