@@ -49,7 +49,7 @@ public class Oh_Heaven extends CardGame {
       return list.get(x);
   }
   
-  private void dealingOut(Hand[] hands, int nbPlayers, int nbCardsPerPlayer) {
+  private void dealingOut(int nbPlayers, int nbCardsPerPlayer) {
 	  Hand pack = deck.toHand(false);
 	  // pack.setView(Oh_Heaven.this, new RowLayout(hideLocation, 0));
 	  for (int i = 0; i < nbCardsPerPlayer; i++) {
@@ -58,7 +58,8 @@ public class Oh_Heaven extends CardGame {
 			  Card dealt = randomCard(pack);
 		      // System.out.println("Cards = " + dealt);
 		      dealt.removeFromHand(false);
-		      hands[j].insert(dealt, false);
+		      players.get(j).getHand().insert(dealt, false);
+		      //hands[j].insert(dealt, false);
 			  // dealt.transfer(hands[j], true);
 		  }
 	  }
@@ -68,7 +69,7 @@ public class Oh_Heaven extends CardGame {
 	  return card1.getRankId() < card2.getRankId(); // Warning: Reverse rank order of cards (see comment on enum)
   }
   
-  private static Oh_Heaven instance = null;
+  private static Oh_Heaven instance;
   private ArrayList<Player> players = new ArrayList<Player>();
   private final String version = "1.0";
   public final int nbPlayers = 4;
@@ -95,7 +96,7 @@ public class Oh_Heaven extends CardGame {
   private final Location trickLocation = new Location(350, 350);
   private final Location textLocation = new Location(350, 450);
   private final int thinkingTime = 100;//2000;
-  private Hand[] hands;
+  //private Hand[] hands;
   private Location hideLocation = new Location(-500, - 500);
   private Location trumpsActorLocation = new Location(50, 50);
   private boolean enforceRules=false;
@@ -114,6 +115,12 @@ public void addObserver(GameInfo gameInfo) {
 	gameObservers.add(new GameObserver(gameInfo));
 }
 
+public void updateBid(int bid, int playerid) {
+	for (IGameObserver observer : gameObservers) {
+		observer.updateBid(bid, playerid);
+	}
+}
+
 public void updateTrump(Suit trump) {
 	for (IGameObserver observer : gameObservers) {
 		observer.updateTrump(trump);
@@ -122,7 +129,8 @@ public void updateTrump(Suit trump) {
 
 public void updateLead(Suit lead) {
 	for (IGameObserver observer : gameObservers) {
-		observer.updateTrump(lead);
+		System.out.println("1 observer lead update");
+		observer.updateLead(lead);
 	}
 }
 
@@ -135,7 +143,13 @@ public void updatePlayedCard(Card card, int playerid) {
 private void initPlayers(Properties properties) {
 	for(int i = 0 ; i< nbPlayers; i++) {
 		String playerType= properties.getProperty("players."+i);
-		players.add(new Player(i,playerType));
+		if (playerType.equals("human")) {
+			players.add(new Player(i,playerType));
+		}
+		else {
+			players.add((Player) new NPC(i,playerType));
+		}
+		System.out.println("Players: " + players.size());
 	}
 }
 
@@ -180,6 +194,7 @@ private void initBids(Suit trumps, int nextPlayer) {
 		 int iP = i % nbPlayers;
 		 bids[iP] = nbStartCards / 4 + random.nextInt(2);
 		 total += bids[iP];
+		 updateBid(bids[iP], iP);
 	 }
 	 if (total == nbStartCards) {  // Force last bid so not every bid possible
 		 int iP = (nextPlayer + nbPlayers) % nbPlayers;
@@ -188,6 +203,7 @@ private void initBids(Suit trumps, int nextPlayer) {
 		 } else {
 			 bids[iP] += random.nextBoolean() ? -1 : 1;
 		 }
+		 updateBid(bids[iP], iP);
 	 }
 	// for (int i = 0; i < nbPlayers; i++) {
 	// 	 bids[i] = nbStartCards / 4 + 1;
@@ -197,13 +213,13 @@ private void initBids(Suit trumps, int nextPlayer) {
 private Card selected;
 
 private void initRound() {
-		hands = new Hand[nbPlayers];
+		//hands = new Hand[nbPlayers];
 		for (int i = 0; i < nbPlayers; i++) {
-			   hands[i] = new Hand(deck);
+			players.get(i).setHand(new Hand(deck));
 			   //using our player list
-			   players.get(i).setHand(hands[i]);
+			   //players.get(i).setHand(hands[i]);
 		}
-		dealingOut(hands, nbPlayers, nbStartCards);
+		dealingOut(nbPlayers, nbStartCards);
 		 for (int i = 0; i < nbPlayers; i++) {
 			  // hands[i].sort(Hand.SortType.SUITPRIORITY, true);
 			   //using our player list
@@ -260,7 +276,8 @@ private void selectLead(int nextPlayer) {
     } else {
 		setStatusText("Player " + nextPlayer + " thinking...");
         delay(thinkingTime);
-        selected = randomCard( players.get(nextPlayer).getHand());
+        selected = players.get(nextPlayer).placeLead();
+        //selected = randomCard( players.get(nextPlayer).getHand());
     }
 }
 
@@ -272,7 +289,8 @@ private void playFollowing(int nextPlayer) {
     } else {
         setStatusText("Player " + nextPlayer + " thinking...");
         delay(thinkingTime);
-        selected = randomCard( players.get(nextPlayer).getHand());
+        selected = players.get(nextPlayer).placeFollowing();
+        //selected = randomCard( players.get(nextPlayer).getHand());
     }
 }
 
@@ -347,10 +365,11 @@ private void playRound() {
 
 
   public void startGame(Properties properties) {
-	  
+	  System.out.println("Starting game");
 
 	  setTitle("Oh_Heaven (V" + version + ") Constructed for UofM SWEN30006 with JGameGrid (www.aplu.ch)");
 	    setStatusText("Initializing...");
+	    initPlayers(properties);
 	    initScores();
 	    initScore();
 	    for (int i=0; i <nbRounds; i++) {
@@ -385,6 +404,13 @@ private void playRound() {
 	  return instance;
   }
   
+  public static Oh_Heaven getInstance(Properties properties) {
+	  if (instance == null) {
+		  instance = new Oh_Heaven(properties);
+	  }
+	  return instance;
+  }
+  
   private Oh_Heaven()
   {
 	super(700, 700, 30);
@@ -400,8 +426,6 @@ private void playRound() {
 	nbRounds = Integer.parseInt(properties.getProperty("rounds"));
 	enforceRules = Boolean.parseBoolean(properties.getProperty("enforceRules"));
 	
-	initPlayers(properties);
-	
   }
 
   public static void main(String[] args)
@@ -413,7 +437,7 @@ private void playRound() {
 	} else {
 	      properties = PropertiesLoader.loadPropertiesFile(args[0]);
 	}
-	Oh_Heaven game = new Oh_Heaven(properties);
+	Oh_Heaven game = Oh_Heaven.getInstance(properties);
     //Oh_Heaven game = getInstance();
     game.startGame(properties);
   }

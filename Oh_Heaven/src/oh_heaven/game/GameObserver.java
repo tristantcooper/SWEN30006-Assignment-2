@@ -25,4 +25,7 @@ public class GameObserver implements IGameObserver {
 		gameInfo.setLead(lead);
 	}
 
+	public void updateBid(int bid, int playerid) {
+		gameInfo.setBid(bid, playerid);
+	}
 }

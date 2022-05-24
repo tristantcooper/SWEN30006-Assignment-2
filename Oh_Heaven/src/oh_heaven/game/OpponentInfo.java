@@ -11,13 +11,12 @@ public class OpponentInfo {
 	private HashMap<Suit, Rank> highestPossible;
 	private HashMap<Suit, Boolean> hasSuits;
 	
-	private int bet;
+	private int bid;
 	private int tricksWon = 0;
 	
-	public OpponentInfo(int bet) {
+	public OpponentInfo() {
 		HashMap<Suit, Rank> highestPossible = new HashMap<Suit, Rank>();
 		HashMap<Suit, Boolean> hasSuits = new HashMap<Suit, Boolean>();
-		this.bet = bet;
 	}
 	
 	public void playCard(Card card) {
@@ -26,5 +25,9 @@ public class OpponentInfo {
 	
 	public void wonTrick() {
 		tricksWon++;
+	}
+	
+	public void setBid(int bid) {
+		this.bid = bid;
 	}
 }

@@ -2,14 +2,17 @@ package oh_heaven.game;
 
 import java.util.ArrayList;
 import java.util.Random;
-
-import ch.aplu.jcardgame.Card;
-import ch.aplu.jcardgame.Hand;
+import ch.aplu.jcardgame.*;
+//import oh_heaven.game.Oh_Heaven.Suit;
 
 public class SmartStrategy implements INPCStrategy {
 	private Random random = new Random();
 	
-	private final GameInfo gameInfo = new GameInfo();
+	private final GameInfo gameInfo;
+	
+	public SmartStrategy(int playerid) {
+		gameInfo = new GameInfo(playerid);
+	}
 
 	@Override
 	public Card leadDecision(Hand hand) {
@@ -27,15 +30,19 @@ public class SmartStrategy implements INPCStrategy {
 		 * legal cards that can be played
 		 * in the current turn.
 		 */
+		System.out.println("Lead: " + gameInfo.getLead());
 		ArrayList<Card> legalCards = hand.getCardsWithSuit(gameInfo.getLead());
+		Card cardToPlay;
 		int numCards = legalCards.size();
 		if (numCards == 0) {
-			return randomCard(hand);
+			cardToPlay = randomCard(hand);
 		}
 		else {
 			int x = random.nextInt(numCards);
-			return legalCards.get(x);
+			cardToPlay = legalCards.get(x);
 		}	
+		System.out.println("Playing card: " + cardToPlay);
+		return cardToPlay;
 	}
 	
 	public Card randomCard(Hand hand){

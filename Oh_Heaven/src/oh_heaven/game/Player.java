@@ -18,9 +18,13 @@ public class Player {
 		else this.isNPC = true;
 		
 	}
-	
+
+	// Not needed. Hand shifting logic already in Oh_Heaven.
+	// Keep it there via info expert.
+	// Player only needs to decide WHAT card to play, game can do the shifting to trick.
 	protected void playCard(Card card) {
 		hand.remove(card, false);
+		System.out.println("Player "+id+" now has hand: "+hand);
 	}
 	
 	public String getPlayerType() {
@@ -33,5 +37,12 @@ public class Player {
 
 	public void setHand(Hand hand) {
 		this.hand = hand;
+	}
+	
+	public Card placeLead() {
+		return null;
+	}
+	public Card placeFollowing() {
+		return null;
 	}
 }

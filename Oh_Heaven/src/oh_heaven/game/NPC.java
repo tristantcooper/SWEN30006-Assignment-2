@@ -8,24 +8,28 @@ public class NPC extends Player {
 	NPC(int id, String playerType) {
 		super(id, playerType);
 		
-		if (playerType == "smart") {
-			this.npcStrategy = new SmartStrategy();
+		if (playerType.equals("smart")) {
+			this.npcStrategy = new SmartStrategy(id);
 		}
 		
 		else {
-			this.npcStrategy = new LegalStrategy();
+			this.npcStrategy = new LegalStrategy(id);
 		}
 	}
 	
+	@Override
 	public Card placeLead() {
 		Card card = npcStrategy.leadDecision(hand);
-		playCard(card);
+		//playCard(card);
 		return card;
 	}
+	@Override
 	public Card placeFollowing() {
 		Card card = npcStrategy.followDecision(hand);
-		playCard(card);
+		//playCard(card);
 		return card;
 	}
+	
+	
 
 }
