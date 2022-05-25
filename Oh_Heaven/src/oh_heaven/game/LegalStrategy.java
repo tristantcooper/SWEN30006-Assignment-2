@@ -1,6 +1,7 @@
 package oh_heaven.game;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 import ch.aplu.jcardgame.*;
 //import oh_heaven.game.Oh_Heaven.Suit;
@@ -11,7 +12,9 @@ public class LegalStrategy implements INPCStrategy {
 	private final GameInfo gameInfo;
 	
 	public LegalStrategy(int playerid) {
-		gameInfo = new GameInfo(playerid);
+		Boolean[] playsLegally = new Boolean[4];
+		Arrays.fill(playsLegally, true);
+		gameInfo = new GameInfo(playerid, playsLegally);
 	}
 
 	@Override
