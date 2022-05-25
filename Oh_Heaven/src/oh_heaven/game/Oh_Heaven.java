@@ -72,6 +72,7 @@ public class Oh_Heaven extends CardGame {
   private static Oh_Heaven instance;
   private ArrayList<Player> players = new ArrayList<Player>();
   private final String version = "1.0";
+  public int currentPlayer;
   public final int nbPlayers = 4;
   public final int nbStartCards;
   public final int nbRounds;
@@ -213,45 +214,51 @@ private void initBids(Suit trumps, int nextPlayer) {
 private Card selected;
 
 private void initRound() {
-		//hands = new Hand[nbPlayers];
-		for (int i = 0; i < nbPlayers; i++) {
-			players.get(i).setHand(new Hand(deck));
-			   //using our player list
-			   //players.get(i).setHand(hands[i]);
+	//hands = new Hand[nbPlayers];
+	for (int i = 0; i < nbPlayers; i++) {
+		players.get(i).setHand(new Hand(deck));
+		   //using our player list
+		   //players.get(i).setHand(hands[i]);
+	}
+	dealingOut(nbPlayers, nbStartCards);
+	 for (int i = 0; i < nbPlayers; i++) {
+		  // hands[i].sort(Hand.SortType.SUITPRIORITY, true);
+		   //using our player list
+		   players.get(i).getHand().sort(Hand.SortType.SUITPRIORITY, true);
+	 }
+	 // Set up human player for interaction
+	for (int i=0; i< nbPlayers ; i++) {
+		currentPlayer = i;
+		if(!players.get(i).isNPC) {
+			CardListener cardListener = new CardAdapter()  // Human Player plays card
+				    {
+				      public void leftDoubleClicked(Card card) { selected = card; 
+				      //hands[0].setTouchEnabled(false);
+				      //using player list
+				      
+				      players.get(currentPlayer).getHand().setTouchEnabled(false); }
+				    };
+				    players.get(currentPlayer).getHand().addCardListener(cardListener);
 		}
-		dealingOut(nbPlayers, nbStartCards);
-		 for (int i = 0; i < nbPlayers; i++) {
-			  // hands[i].sort(Hand.SortType.SUITPRIORITY, true);
-			   //using our player list
-			   players.get(i).getHand().sort(Hand.SortType.SUITPRIORITY, true);
-		 }
-		 // Set up human player for interaction
-		CardListener cardListener = new CardAdapter()  // Human Player plays card
-			    {
-			      public void leftDoubleClicked(Card card) { selected = card; 
-			      //hands[0].setTouchEnabled(false);
-			      //using player list
-			      
-			      players.get(0).getHand().setTouchEnabled(false); }
-			    };
-			    players.get(0).getHand().addCardListener(cardListener);
-		 // graphics
-	    RowLayout[] layouts = new RowLayout[nbPlayers];
-	    for (int i = 0; i < nbPlayers; i++) {
-	      layouts[i] = new RowLayout(handLocations[i], handWidth);
-	      layouts[i].setRotationAngle(90 * i);
-	      // layouts[i].setStepDelay(10);
-	      //hands[i].setView(this, layouts[i]);
-	      //using list
-	      players.get(i).getHand().setView(this, layouts[i]);
-	      players.get(i).getHand().setTargetArea(new TargetArea(trickLocation));
-	      players.get(i).getHand().draw();
-	    }
-//	    for (int i = 1; i < nbPlayers; i++) // This code can be used to visually hide the cards in a hand (make them face down)
-//	      hands[i].setVerso(true);			// You do not need to use or change this code.
-	    // End graphics
- }
-
+	}
+	 
+	 
+	 // graphics
+    RowLayout[] layouts = new RowLayout[nbPlayers];
+    for (int i = 0; i < nbPlayers; i++) {
+      layouts[i] = new RowLayout(handLocations[i], handWidth);
+      layouts[i].setRotationAngle(90 * i);
+      // layouts[i].setStepDelay(10);
+      //hands[i].setView(this, layouts[i]);
+      //using list
+      players.get(i).getHand().setView(this, layouts[i]);
+      players.get(i).getHand().setTargetArea(new TargetArea(trickLocation));
+      players.get(i).getHand().draw();
+    }
+//    for (int i = 1; i < nbPlayers; i++) // This code can be used to visually hide the cards in a hand (make them face down)
+//      hands[i].setVerso(true);			// You do not need to use or change this code.
+    // End graphics
+}
 private void ruleCheck(int nextPlayer, Suit lead) {
 	if (selected.getSuit() != lead &&  players.get(nextPlayer).getHand().getNumberOfCardsWithSuit(lead) > 0) {
 		 // Rule violation
