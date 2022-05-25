@@ -1,8 +1,10 @@
 package oh_heaven.game;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 import ch.aplu.jcardgame.*;
+import oh_heaven.game.Oh_Heaven.Suit;
 //import oh_heaven.game.Oh_Heaven.Suit;
 
 public class SmartStrategy implements INPCStrategy {
@@ -11,16 +13,42 @@ public class SmartStrategy implements INPCStrategy {
 	private final GameInfo gameInfo;
 	
 	public SmartStrategy(int playerid) {
-		gameInfo = new GameInfo(playerid);
+		Boolean[] playsLegally = new Boolean[4];
+		Arrays.fill(playsLegally, true);
+		gameInfo = new GameInfo(playerid, playsLegally);
 	}
 
 	@Override
 	public Card leadDecision(Hand hand) {
-		return randomCard(hand);
+		Card highestTrump = hand.getCardsWithSuit(gameInfo.getTrump()).get(0); // already sorts
+		if (highestTrump.getRankId() == gameInfo.getHighestTrump()) {
+			// Will always win if you lead with the highest ranked remaining
+			// trump out of active cards.
+			return highestTrump;
+		}
+		ArrayList<Card> matchingLeads =  hand.getCardsWithRank(gameInfo.getLead());
+		if (matchingLeads.size() > 0) {
+			// Have cards that match the leading suit
+			Card bestMatchingCard = matchingLeads.get(0);
+			if (bestMatchingCard.getRankId() > gameInfo.getBestMatchingLead()) {
+				// Can beat the current best leading suits
+				return bestMatchingCard;
+			}
+			else {
+				// Can't win, so play worst card
+				return matchingLeads.get(matchingLeads.size() - 1);
+			}
+		}
+		else {
+			return randomCard(hand);
+		}
+		
 	}
 
 	@Override
 	public Card followDecision(Hand hand) {
+		ArrayList<Card> cardsMatchingLead = hand.getCardsWithSuit(gameInfo.getLead());
+		
 		return playLegalCard(hand);
 	}
 	
@@ -49,5 +77,10 @@ public class SmartStrategy implements INPCStrategy {
 	      int x = random.nextInt(hand.getNumberOfCards());
 	      return hand.get(x);
 	  }
+	
+	public Card getHighestCard(Hand hand, Suit suit) {
+		ArrayList<Card> cards = hand.getCardsWithSuit(suit); // Sorts cards based on Rank
+		return cards.get(0); // Reverse-ordered Rank enum
+	}
 
 }

@@ -24,7 +24,7 @@ public class Player {
 	// Player only needs to decide WHAT card to play, game can do the shifting to trick.
 	protected void playCard(Card card) {
 		hand.remove(card, false);
-		System.out.println("Player "+id+" now has hand: "+hand);
+		//System.out.println("Player "+id+" now has hand: "+hand);
 	}
 	
 	public String getPlayerType() {

@@ -8,5 +8,5 @@ public interface IGameObserver {
 	public void updateBid(int bid, int playerid);
 	public void updatePlayedCard(Card card, int playerid);
 	public void updateTrump(Suit trump);
-	public void updateLead(Suit lead);
+	public void updateLead(Card lead);
 }

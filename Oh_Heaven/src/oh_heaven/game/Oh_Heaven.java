@@ -127,7 +127,7 @@ public void updateTrump(Suit trump) {
 	}
 }
 
-public void updateLead(Suit lead) {
+public void updateLead(Card lead) {
 	for (IGameObserver observer : gameObservers) {
 		System.out.println("1 observer lead update");
 		observer.updateLead(lead);
@@ -320,7 +320,7 @@ private void playRound() {
 			selected.setVerso(false);
 			// No restrictions on the card being lead
 			lead = (Suit) selected.getSuit();
-			updateLead(lead);
+			updateLead(selected);
 			selected.transfer(trick, true); // transfer to trick (includes graphic effect)
 			winner = nextPlayer;
 			winningCard = selected;

@@ -21,7 +21,7 @@ public class GameObserver implements IGameObserver {
 	}
 
 	@Override
-	public void updateLead(Suit lead) {
+	public void updateLead(Card lead) {
 		gameInfo.setLead(lead);
 	}
 

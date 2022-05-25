@@ -12,6 +12,8 @@ public class GameInfo {
 	private int playerid;
 	private Suit trump;
 	private Suit lead;
+	private int bestMatchingLead;
+	private Boolean trumpPlayed;
 	private HashMap<Suit, Integer> highestPossible;
 	private ArrayList<OpponentInfo> opponentInfo;
 	
@@ -19,6 +21,7 @@ public class GameInfo {
 		//Stores 4, only updates 3 opponents.
 		// Didn't want to have to map player ids to new values.
 		opponentInfo = new ArrayList<OpponentInfo>(4);
+		highestPossible = new HashMap<Suit, Integer>();
 		this.playerid = playerid;
 		for (int i=0;i<4;i++) {
 			opponentInfo.add(new OpponentInfo(playsLegally[i]));
@@ -30,16 +33,27 @@ public class GameInfo {
 	}
 		
 	public void playedCard(Card card, int playerid) {
+		// Played trump suit
+		if (((Suit) card.getSuit()).equals(trump)) {
+			trumpPlayed = true;
+		}
+		// Highest remaining in suit played
 		if (card.getRankId() == highestPossible.get((Suit) card.getSuit())) {
-			// Decrease highest possible rank by 1 if maximum has just been played
+			// Decrease highest possible by a single rank if maximum has just been played
 			highestPossible.put((Suit) card.getSuit(), highestPossible.get((Suit) card.getSuit()) + 1);
 		}
+		// New card out ranks previous best in lead suit
+		if ((Suit) card.getSuit() == lead & card.getRankId() < bestMatchingLead) {
+			bestMatchingLead = card.getRankId();
+		}
 		if (playerid == this.playerid) {
+			// No need to log ourselves
 			return;
 		}
 		else {
-			opponentInfo.get(playerid).playCard(card);
+			opponentInfo.get(playerid).playCard(card, card.getSuit().equals(lead));
 		}
+		
 	}
 	
 	public Suit getLead() {
@@ -53,10 +67,20 @@ public class GameInfo {
 	public void setTrump(Suit trump) {
 		this.trump = trump;
 	}
+	
+	
+	public int getBestMatchingLead() {
+		return bestMatchingLead;
+	}
 
-	public void setLead(Suit lead) {
+	public int getHighestTrump() {
+		return highestPossible.get(trump);
+	}
+
+	public void setLead(Card lead) {
 		System.out.println("Player " + playerid + " received lead update: " + lead);
-		this.lead = lead;
+		this.lead = (Suit) lead.getSuit();
+		bestMatchingLead = lead.getRankId();
 	}
 	public void setBid(int bid, int playerid) {
 		if (playerid == this.playerid) {
