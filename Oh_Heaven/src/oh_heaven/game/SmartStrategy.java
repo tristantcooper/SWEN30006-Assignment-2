@@ -20,12 +20,18 @@ public class SmartStrategy implements INPCStrategy {
 
 	@Override
 	public Card leadDecision(Hand hand) {
-		Card highestTrump = hand.getCardsWithSuit(gameInfo.getTrump()).get(0); // already sorts
-		if (highestTrump.getRankId() == gameInfo.getHighestTrump()) {
-			// Will always win if you lead with the highest ranked remaining
-			// trump out of active cards.
-			return highestTrump;
+		
+		
+		if (!hand.getCardsWithSuit(gameInfo.getTrump()).isEmpty()) {
+			Card highestTrump = hand.getCardsWithSuit(gameInfo.getTrump()).get(0); // already sorts
+			if (highestTrump.getRankId() == gameInfo.getHighestTrump()) {
+				// Will always win if you lead with the highest ranked remaining
+				// trump out of active cards.
+				return highestTrump;
+			}
+			
 		}
+
 		ArrayList<Card> matchingLeads =  hand.getCardsWithRank(gameInfo.getLead());
 		if (matchingLeads.size() > 0) {
 			// Have cards that match the leading suit
