@@ -22,11 +22,11 @@ public class OpponentInfo {
 	}
 	
 	public void playCard(Card card, Boolean leadingSuit) {
-		if (playsLegally & leadingSuit) {
+		if (playsLegally && leadingSuit) {
 			// Highest possible now 1 lower than what they played
 			highestPossible.put((Suit) card.getSuit(), card.getRankId() + 1);
 		}
-		if (playsLegally & !leadingSuit) {
+		if (playsLegally && !leadingSuit) {
 			// Does not have card in leading suit
 			hasSuits.put((Suit) card.getSuit(), false);
 		}

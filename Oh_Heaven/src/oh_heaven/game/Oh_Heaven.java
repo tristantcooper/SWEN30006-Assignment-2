@@ -278,7 +278,7 @@ private void ruleCheck(int nextPlayer, Suit lead) {
 private void selectLead(int nextPlayer) {
 	if (!players.get(nextPlayer).isNPC) {  // Select lead depending on player type
 		 players.get(nextPlayer).getHand().setTouchEnabled(true);
-		setStatus("Player 0 double-click on card to lead.");
+		setStatus("Player " + nextPlayer + " double-click on card to lead.");
 		while (null == selected) delay(100);
     } else {
 		setStatusText("Player " + nextPlayer + " thinking...");
@@ -291,7 +291,7 @@ private void selectLead(int nextPlayer) {
 private void playFollowing(int nextPlayer) {
 	if (!players.get(nextPlayer).isNPC ) {
 		players.get(nextPlayer).getHand().setTouchEnabled(true);
-		setStatus("Player 0 double-click on card to follow.");
+		setStatus("Player " + nextPlayer + " double-click on card to follow.");
 		while (null == selected) delay(100);
     } else {
         setStatusText("Player " + nextPlayer + " thinking...");

@@ -22,6 +22,7 @@ public class GameInfo {
 		// Didn't want to have to map player ids to new values.
 		opponentInfo = new ArrayList<OpponentInfo>(4);
 		highestPossible = new HashMap<Suit, Integer>();
+		bestMatchingLead = Rank.values().length;
 		this.playerid = playerid;
 		for (int i=0;i<4;i++) {
 			opponentInfo.add(new OpponentInfo(playsLegally[i]));
@@ -43,7 +44,7 @@ public class GameInfo {
 			highestPossible.put((Suit) card.getSuit(), highestPossible.get((Suit) card.getSuit()) + 1);
 		}
 		// New card out ranks previous best in lead suit
-		if ((Suit) card.getSuit() == lead & card.getRankId() < bestMatchingLead) {
+		if ((Suit) card.getSuit() == lead && card.getRankId() < bestMatchingLead) {
 			bestMatchingLead = card.getRankId();
 		}
 		if (playerid == this.playerid) {

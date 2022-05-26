@@ -29,33 +29,30 @@ public class SmartStrategy implements INPCStrategy {
 				// trump out of active cards.
 				return highestTrump;
 			}
-			
 		}
-
-		ArrayList<Card> matchingLeads =  hand.getCardsWithRank(gameInfo.getLead());
-		if (matchingLeads.size() > 0) {
-			// Have cards that match the leading suit
-			Card bestMatchingCard = matchingLeads.get(0);
-			if (bestMatchingCard.getRankId() > gameInfo.getBestMatchingLead()) {
-				// Can beat the current best leading suits
-				return bestMatchingCard;
-			}
-			else {
-				// Can't win, so play worst card
-				return matchingLeads.get(matchingLeads.size() - 1);
-			}
-		}
-		else {
-			return randomCard(hand);
-		}
-		
+		return randomCard(hand);
 	}
 
 	@Override
 	public Card followDecision(Hand hand) {
 		ArrayList<Card> cardsMatchingLead = hand.getCardsWithSuit(gameInfo.getLead());
 		
-		return playLegalCard(hand);
+		if (cardsMatchingLead.size() > 0) {
+			// Have cards that match the leading suit
+			Card bestMatchingCard = cardsMatchingLead.get(0);
+			System.out.println("Best on table is: " + gameInfo.getBestMatchingLead());
+			System.out.println("Best card is: " + bestMatchingCard);
+			if (bestMatchingCard.getRankId() < gameInfo.getBestMatchingLead()) { // reverse enum order
+				// Can beat the current best leading suits
+				return bestMatchingCard;
+			}
+			else {
+				// Can't win, so play worst card
+				System.out.println("Playing worst card.");
+				return cardsMatchingLead.get(cardsMatchingLead.size() - 1);
+			}
+		}
+		return randomCard(hand);
 	}
 	
 	public Card playLegalCard(Hand hand) {
