@@ -214,16 +214,11 @@ private void initBids(Suit trumps, int nextPlayer) {
 private Card selected;
 
 private void initRound() {
-	//hands = new Hand[nbPlayers];
 	for (int i = 0; i < nbPlayers; i++) {
 		players.get(i).setHand(new Hand(deck));
-		   //using our player list
-		   //players.get(i).setHand(hands[i]);
 	}
 	dealingOut(nbPlayers, nbStartCards);
 	 for (int i = 0; i < nbPlayers; i++) {
-		  // hands[i].sort(Hand.SortType.SUITPRIORITY, true);
-		   //using our player list
 		   players.get(i).getHand().sort(Hand.SortType.SUITPRIORITY, true);
 	 }
 	 // Set up human player for interaction
@@ -255,8 +250,14 @@ private void initRound() {
       players.get(i).getHand().setTargetArea(new TargetArea(trickLocation));
       players.get(i).getHand().draw();
     }
-//    for (int i = 1; i < nbPlayers; i++) // This code can be used to visually hide the cards in a hand (make them face down)
-//      hands[i].setVerso(true);			// You do not need to use or change this code.
+    for (int i = 0; i < nbPlayers; i++) {
+    	if(players.get(i).isNPC) {
+    	players.get(i).getHand().setVerso(true);	
+    	}
+    	
+    	// This code can be used to visually hide the cards in a hand (make them face down)
+    }
+    			// You do not need to use or change this code.
     // End graphics
 }
 private void ruleCheck(int nextPlayer, Suit lead) {
