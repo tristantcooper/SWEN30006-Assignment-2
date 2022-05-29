@@ -37,7 +37,7 @@ public class OpponentInfo {
 		tricksWon++;
 	}
 	
-	public void incrementScore() {
+	public void updateScore() {
 		score += tricksWon;
 		if (tricksWon == bid) {
 			score += Oh_Heaven.getInstance().madeBidBonus;

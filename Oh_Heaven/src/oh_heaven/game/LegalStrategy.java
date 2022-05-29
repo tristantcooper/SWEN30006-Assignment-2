@@ -33,7 +33,6 @@ public class LegalStrategy implements INPCStrategy {
 		 * legal cards that can be played
 		 * in the current turn.
 		 */
-		System.out.println("Lead: " + gameInfo.getLead());
 		ArrayList<Card> legalCards = hand.getCardsWithSuit(gameInfo.getLead());
 		Card cardToPlay;
 		int numCards = legalCards.size();
@@ -44,7 +43,6 @@ public class LegalStrategy implements INPCStrategy {
 			int x = random.nextInt(numCards);
 			cardToPlay = legalCards.get(x);
 		}	
-		System.out.println("Playing card: " + cardToPlay);
 		return cardToPlay;
 	}
 	

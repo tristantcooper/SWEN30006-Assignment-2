@@ -96,7 +96,7 @@ public class Oh_Heaven extends CardGame {
   private Actor[] scoreActors = {null, null, null, null };
   private final Location trickLocation = new Location(350, 350);
   private final Location textLocation = new Location(350, 450);
-  private final int thinkingTime = 500;//2000;
+  private final int thinkingTime = 1000;//2000;
   private Location hideLocation = new Location(-500, - 500);
   private Location trumpsActorLocation = new Location(50, 50);
   private boolean enforceRules=false;
@@ -126,7 +126,7 @@ public void updateTrump(Suit trump) {
 
 public void updateLead(Card lead) {
 	for (IGameObserver observer : gameObservers) {
-		System.out.println("1 observer lead update");
+		//System.out.println("1 observer lead update");
 		observer.updateLead(lead);
 	}
 }

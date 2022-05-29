@@ -40,10 +40,6 @@ public class Player {
 		tricks = 0;
 	}
 	
-	public void incrementScore(int value) {
-		score = score + value;
-	}
-	
 	public String getPlayerType() {
 		return playerType;
 	}

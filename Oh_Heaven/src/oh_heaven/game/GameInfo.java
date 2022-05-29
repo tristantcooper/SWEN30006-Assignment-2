@@ -97,7 +97,7 @@ public class GameInfo {
 	}
 
 	public void setLead(Card lead) {
-		System.out.println("Player " + playerid + " received lead update: " + lead);
+		//System.out.println("Player " + playerid + " received lead update: " + lead);
 		this.lead = (Suit) lead.getSuit();
 		bestMatchingLead = lead.getRankId();
 	}
@@ -115,7 +115,7 @@ public class GameInfo {
 				continue;
 			}
 			else {
-				opponentInfo.get(playerid).incrementScore();
+				opponentInfo.get(playerid).updateScore();
 			}
 		}
 	}

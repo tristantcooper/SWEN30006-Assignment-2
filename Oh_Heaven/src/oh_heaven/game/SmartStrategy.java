@@ -8,7 +8,7 @@ import oh_heaven.game.Oh_Heaven.Suit;
 //import oh_heaven.game.Oh_Heaven.Suit;
 
 public class SmartStrategy implements INPCStrategy {
-	private Random random = new Random();
+	private Random random = new Random(1);
 	
 	private final GameInfo gameInfo;
 	
@@ -36,46 +36,25 @@ public class SmartStrategy implements INPCStrategy {
 	@Override
 	public Card followDecision(Hand hand) {
 		ArrayList<Card> cardsMatchingLead = hand.getCardsWithSuit(gameInfo.getLead());
-		
+		//System.out.println("Cards matching suit: " + cardsMatchingLead.size());
 		if (cardsMatchingLead.size() > 0) {
 			// Have cards that match the leading suit
 			Card bestMatchingCard = cardsMatchingLead.get(0);
-			System.out.println("Best on table is: " + gameInfo.getBestMatchingLead());
-			System.out.println("Best card is: " + bestMatchingCard);
+			//System.out.println("Best on table is: " + gameInfo.getBestMatchingLead());
+			//System.out.println("Best card is: " + bestMatchingCard);
 			if (bestMatchingCard.getRankId() < gameInfo.getBestMatchingLead()) { // reverse enum order
 				// Can beat the current best leading suits
 				return bestMatchingCard;
 			}
 			else {
 				// Can't win, so play worst card
-				System.out.println("Playing worst card.");
+				//System.out.println("Playing worst card.");
 				return cardsMatchingLead.get(cardsMatchingLead.size() - 1);
 			}
 		}
 		return randomCard(hand);
 	}
-	
-	public Card playLegalCard(Hand hand) {
-		/**
-		 * Returns a single card of the possible
-		 * legal cards that can be played
-		 * in the current turn.
-		 */
-		System.out.println("Lead: " + gameInfo.getLead());
-		ArrayList<Card> legalCards = hand.getCardsWithSuit(gameInfo.getLead());
-		Card cardToPlay;
-		int numCards = legalCards.size();
-		if (numCards == 0) {
-			cardToPlay = randomCard(hand);
-		}
-		else {
-			int x = random.nextInt(numCards);
-			cardToPlay = legalCards.get(x);
-		}	
-		System.out.println("Playing card: " + cardToPlay);
-		return cardToPlay;
-	}
-	
+		
 	public Card randomCard(Hand hand){
 	      int x = random.nextInt(hand.getNumberOfCards());
 	      return hand.get(x);
