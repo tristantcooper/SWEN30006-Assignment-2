@@ -13,7 +13,8 @@ public class GameInfo {
 	private Suit trump;
 	private Suit lead;
 	private int bestMatchingLead;
-	private Boolean trumpPlayed;
+	private boolean trumpPlayed;
+	private int bestMatchingTrump;
 	private HashMap<Suit, Integer> highestPossible;
 	private ArrayList<OpponentInfo> opponentInfo;
 	
@@ -23,6 +24,7 @@ public class GameInfo {
 		opponentInfo = new ArrayList<OpponentInfo>(4);
 		highestPossible = new HashMap<Suit, Integer>();
 		bestMatchingLead = Rank.values().length;
+		bestMatchingTrump = Rank.values().length;
 		this.playerid = playerid;
 		for (int i=0;i<4;i++) {
 			opponentInfo.add(new OpponentInfo(playsLegally[i]));
@@ -47,6 +49,10 @@ public class GameInfo {
 		if ((Suit) card.getSuit() == lead && card.getRankId() < bestMatchingLead) {
 			bestMatchingLead = card.getRankId();
 		}
+		if ((Suit) card.getSuit() == trump && card.getRankId() < bestMatchingTrump) {
+			trumpPlayed = true;
+			bestMatchingTrump = card.getRankId();
+		}
 		if (playerid == this.playerid) {
 			// No need to log ourselves
 			return;
@@ -69,7 +75,10 @@ public class GameInfo {
 		this.trump = trump;
 	}
 	
-	
+	public boolean isTrumpPlayed() {
+		return trumpPlayed;
+	}
+
 	public int getBestMatchingLead() {
 		return bestMatchingLead;
 	}
