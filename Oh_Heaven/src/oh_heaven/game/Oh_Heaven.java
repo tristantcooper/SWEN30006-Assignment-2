@@ -96,8 +96,7 @@ public class Oh_Heaven extends CardGame {
   private Actor[] scoreActors = {null, null, null, null };
   private final Location trickLocation = new Location(350, 350);
   private final Location textLocation = new Location(350, 450);
-  private final int thinkingTime = 100;//2000;
-  //private Hand[] hands;
+  private final int thinkingTime = 500;//2000;
   private Location hideLocation = new Location(-500, - 500);
   private Location trumpsActorLocation = new Location(50, 50);
   private boolean enforceRules=false;
@@ -129,6 +128,18 @@ public void updateLead(Card lead) {
 	for (IGameObserver observer : gameObservers) {
 		System.out.println("1 observer lead update");
 		observer.updateLead(lead);
+	}
+}
+
+public void updateRoundEnd() {
+	for (IGameObserver observer : gameObservers) {
+		observer.updateRoundEnd();
+	}
+}
+
+public void updateTrickWon(int playerid) {
+	for (IGameObserver observer : gameObservers) {
+		observer.updateTrickWon(playerid);
 	}
 }
 
@@ -357,6 +368,7 @@ private void playRound() {
 		nextPlayer = winner;
 		setStatusText("Player " + nextPlayer + " wins trick.");
 		players.get(nextPlayer).wonTrick();
+		updateTrickWon(nextPlayer);
 		updateScore(nextPlayer);
 	}
 	removeActor(trumpsActor);
@@ -376,6 +388,7 @@ private void playRound() {
 	      initRound();
 	      playRound();
 	      updateScores();
+	      updateRoundEnd();
 	    };
 	    for (int i=0; i <nbPlayers; i++) updateScore(i);
 	    int maxScore = 0;

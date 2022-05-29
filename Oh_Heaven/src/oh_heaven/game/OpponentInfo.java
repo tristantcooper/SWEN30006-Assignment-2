@@ -13,6 +13,7 @@ public class OpponentInfo {
 	
 	private int bid;
 	private int tricksWon = 0;
+	private int score = 0;
 	private boolean playsLegally;;
 	
 	OpponentInfo(boolean playsLegally) {
@@ -34,6 +35,14 @@ public class OpponentInfo {
 	
 	public void wonTrick() {
 		tricksWon++;
+	}
+	
+	public void incrementScore() {
+		score += tricksWon;
+		if (tricksWon == bid) {
+			score += Oh_Heaven.getInstance().madeBidBonus;
+		}
+		tricksWon = 0;
 	}
 	
 	public void setBid(int bid) {

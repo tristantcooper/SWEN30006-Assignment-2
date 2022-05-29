@@ -86,6 +86,15 @@ public class GameInfo {
 	public int getHighestTrump() {
 		return highestPossible.get(trump);
 	}
+	
+	public void trickWon(int playerid) {
+		if (playerid == this.playerid) {
+			return;
+		}
+		else {
+			opponentInfo.get(playerid).wonTrick();
+		}
+	}
 
 	public void setLead(Card lead) {
 		System.out.println("Player " + playerid + " received lead update: " + lead);
@@ -98,6 +107,16 @@ public class GameInfo {
 		}
 		else {
 			opponentInfo.get(playerid).setBid(bid);
+		}
+	}
+	public void updateScores() {
+		for (int i=0;i<4;i++) {
+			if (i == playerid) {
+				continue;
+			}
+			else {
+				opponentInfo.get(playerid).incrementScore();
+			}
 		}
 	}
 }

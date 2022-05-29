@@ -28,4 +28,17 @@ public class GameObserver implements IGameObserver {
 	public void updateBid(int bid, int playerid) {
 		gameInfo.setBid(bid, playerid);
 	}
+
+	@Override
+	public void updateTrickWon(int playerid) {
+		gameInfo.trickWon(playerid);
+		
+	}
+
+	@Override
+	public void updateRoundEnd() {
+		gameInfo.updateScores();
+		
+	}
+	
 }

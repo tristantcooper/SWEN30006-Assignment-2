@@ -9,4 +9,6 @@ public interface IGameObserver {
 	public void updatePlayedCard(Card card, int playerid);
 	public void updateTrump(Suit trump);
 	public void updateLead(Card lead);
+	public void updateTrickWon(int playerid);
+	public void updateRoundEnd();
 }
