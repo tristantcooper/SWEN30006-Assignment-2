@@ -11,7 +11,9 @@ public class NPC extends Player {
 		if (playerType.equals("smart")) {
 			this.npcStrategy = new SmartStrategy(id);
 		}
-		
+		if (playerType.equals("random")) {
+			this.npcStrategy = new RandomStrategy();
+		}
 		else {
 			this.npcStrategy = new LegalStrategy(id);
 		}

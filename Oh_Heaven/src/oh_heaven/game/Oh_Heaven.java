@@ -101,12 +101,9 @@ public class Oh_Heaven extends CardGame {
   private Location hideLocation = new Location(-500, - 500);
   private Location trumpsActorLocation = new Location(50, 50);
   private boolean enforceRules=false;
+  private boolean hideNPCHands;
 
   public void setStatus(String string) { setStatusText(string); }
-  
-private int[] scores = new int[nbPlayers];
-private int[] tricks = new int[nbPlayers];
-private int[] bids = new int[nbPlayers];
 
 private ArrayList<IGameObserver> gameObservers = new ArrayList<IGameObserver>();
 
@@ -142,6 +139,11 @@ public void updatePlayedCard(Card card, int playerid) {
 }
 
 private void initPlayers(Properties properties) {
+	if (properties == null) {
+		for(int i = 0 ; i< nbPlayers; i++) {
+			players.add(new Player(i,"legal"));
+		}
+	}
 	for(int i = 0 ; i< nbPlayers; i++) {
 		String playerType= properties.getProperty("players."+i);
 		if (playerType.equals("human")) {
@@ -170,23 +172,11 @@ private void updateScore(int player) {
 	addActor(scoreActors[player], scoreLocations[player]);
 }
 
-//private void initScores() {
-//	 for (int i = 0; i < nbPlayers; i++) {
-//		 scores[i] = 0;
-//	 }
-//}
-
 private void updateScores() {
 	 for (int i = 0; i < nbPlayers; i++) {
 		 players.get(i).updateScore();
 	 }
 }
-
-//private void initTricks() {
-//	 for (int i = 0; i < nbPlayers; i++) {
-//		 tricks[i] = 0;
-//	 }
-//}
 
 private void initBids(Suit trumps, int nextPlayer) {
 	int total = 0;
@@ -254,11 +244,12 @@ private void initRound() {
       players.get(i).getHand().setTargetArea(new TargetArea(trickLocation));
       players.get(i).getHand().draw();
     }
-    for (int i = 0; i < nbPlayers; i++) {
-    	if(players.get(i).isNPC) {
-    	players.get(i).getHand().setVerso(true);	
-    	}
-    	
+    if (hideNPCHands) {
+    	for (int i = 0; i < nbPlayers; i++) {
+        	if(players.get(i).isNPC) {
+        	players.get(i).getHand().setVerso(true);	
+        	}
+    	}    	
     	// This code can be used to visually hide the cards in a hand (make them face down)
     }
     			// You do not need to use or change this code.
@@ -289,7 +280,6 @@ private void selectLead(int nextPlayer) {
 		setStatusText("Player " + nextPlayer + " thinking...");
         delay(thinkingTime);
         selected = players.get(nextPlayer).placeLead();
-        //selected = randomCard( players.get(nextPlayer).getHand());
     }
 }
 
@@ -302,7 +292,6 @@ private void playFollowing(int nextPlayer) {
         setStatusText("Player " + nextPlayer + " thinking...");
         delay(thinkingTime);
         selected = players.get(nextPlayer).placeFollowing();
-        //selected = randomCard( players.get(nextPlayer).getHand());
     }
 }
 
@@ -319,12 +308,10 @@ private void playRound() {
 	Suit lead;
 	int nextPlayer = random.nextInt(nbPlayers); // randomly select player to lead for this round
 	initBids(trumps, nextPlayer);
-    // initScore();
     for (int i = 0; i < nbPlayers; i++) updateScore(i);
 	for (int i = 0; i < nbStartCards; i++) {
 		trick = new Hand(deck);
     	selected = null;
-    	// if (false) {
     	selectLead(nextPlayer);
         // Lead with selected card
 	        trick.setView(this, new RowLayout(trickLocation, (trick.getNumberOfCards()+2)*trickWidth));
@@ -416,19 +403,14 @@ private void playRound() {
 	  return instance;
   }
   
-  public static Oh_Heaven getInstance(Properties properties) {
-	  if (instance == null) {
-		  instance = new Oh_Heaven(properties);
-	  }
-	  return instance;
-  }
-  
   private Oh_Heaven()
   {
 	super(700, 700, 30);
 	nbStartCards = 13;
 	nbRounds = 2;
 	enforceRules = false;
+	hideNPCHands = false;
+	instance = this;
   }
   
   private Oh_Heaven(Properties properties)
@@ -437,6 +419,13 @@ private void playRound() {
 	nbStartCards =  Integer.parseInt(properties.getProperty("nbStartCards"));
 	nbRounds = Integer.parseInt(properties.getProperty("rounds"));
 	enforceRules = Boolean.parseBoolean(properties.getProperty("enforceRules"));
+	if (properties.getProperty("enforceRules") != null) {
+		hideNPCHands = Boolean.parseBoolean(properties.getProperty("hideNPCHands"));
+	}
+	else {
+		hideNPCHands = false;
+	}
+	instance = this;
 	
   }
 
@@ -449,8 +438,7 @@ private void playRound() {
 	} else {
 	      properties = PropertiesLoader.loadPropertiesFile(args[0]);
 	}
-	Oh_Heaven game = Oh_Heaven.getInstance(properties);
-    //Oh_Heaven game = getInstance();
+	Oh_Heaven game = new Oh_Heaven(properties);
     game.startGame(properties);
   }
 
