@@ -157,7 +157,7 @@ private void initPlayers(Properties properties) {
 private void initScore() {
 	 for (int i = 0; i < nbPlayers; i++) {
 		 // scores[i] = 0;
-		 String text = "[" + String.valueOf(scores[i]) + "]" + String.valueOf(tricks[i]) + "/" + String.valueOf(bids[i]);
+		 String text = "[" + String.valueOf(players.get(i).getScore()) + "]" + String.valueOf(players.get(i).getTricks()) + "/" + String.valueOf(players.get(i).getBid());
 		 scoreActors[i] = new TextActor(text, Color.WHITE, bgColor, bigFont);
 		 addActor(scoreActors[i], scoreLocations[i]);
 	 }
@@ -165,46 +165,50 @@ private void initScore() {
 
 private void updateScore(int player) {
 	removeActor(scoreActors[player]);
-	String text = "[" + String.valueOf(scores[player]) + "]" + String.valueOf(tricks[player]) + "/" + String.valueOf(bids[player]);
+	String text = "[" + String.valueOf(players.get(player).getScore()) + "]" + String.valueOf(players.get(player).getTricks()) + "/" + String.valueOf(players.get(player).getBid());
 	scoreActors[player] = new TextActor(text, Color.WHITE, bgColor, bigFont);
 	addActor(scoreActors[player], scoreLocations[player]);
 }
 
-private void initScores() {
-	 for (int i = 0; i < nbPlayers; i++) {
-		 scores[i] = 0;
-	 }
-}
+//private void initScores() {
+//	 for (int i = 0; i < nbPlayers; i++) {
+//		 scores[i] = 0;
+//	 }
+//}
 
 private void updateScores() {
 	 for (int i = 0; i < nbPlayers; i++) {
-		 scores[i] += tricks[i];
-		 if (tricks[i] == bids[i]) scores[i] += madeBidBonus;
+		 players.get(i).updateScore();
 	 }
 }
 
-private void initTricks() {
-	 for (int i = 0; i < nbPlayers; i++) {
-		 tricks[i] = 0;
-	 }
-}
+//private void initTricks() {
+//	 for (int i = 0; i < nbPlayers; i++) {
+//		 tricks[i] = 0;
+//	 }
+//}
 
 private void initBids(Suit trumps, int nextPlayer) {
 	int total = 0;
+	int bid;
 	for (int i = nextPlayer; i < nextPlayer + nbPlayers; i++) {
 		 int iP = i % nbPlayers;
-		 bids[iP] = nbStartCards / 4 + random.nextInt(2);
-		 total += bids[iP];
-		 updateBid(bids[iP], iP);
+		 bid = nbStartCards / 4 + random.nextInt(2);
+		 players.get(iP).setBid(bid);
+		 total += bid;
+		 updateBid(bid, iP);
 	 }
 	 if (total == nbStartCards) {  // Force last bid so not every bid possible
 		 int iP = (nextPlayer + nbPlayers) % nbPlayers;
-		 if (bids[iP] == 0) {
-			 bids[iP] = 1;
+		 bid = players.get(iP).getBid();
+		 if (bid == 0) {
+			 bid = 1;
+			 players.get(iP).setBid(bid);
 		 } else {
-			 bids[iP] += random.nextBoolean() ? -1 : 1;
+			 bid += random.nextBoolean() ? -1 : 1;
+			 players.get(iP).setBid(bid);
 		 }
-		 updateBid(bids[iP], iP);
+		 updateBid(bid, iP);
 	 }
 	// for (int i = 0; i < nbPlayers; i++) {
 	// 	 bids[i] = nbStartCards / 4 + 1;
@@ -365,7 +369,7 @@ private void playRound() {
 		trick.draw();		
 		nextPlayer = winner;
 		setStatusText("Player " + nextPlayer + " wins trick.");
-		tricks[nextPlayer]++;
+		players.get(nextPlayer).wonTrick();
 		updateScore(nextPlayer);
 	}
 	removeActor(trumpsActor);
@@ -378,19 +382,19 @@ private void playRound() {
 	  setTitle("Oh_Heaven (V" + version + ") Constructed for UofM SWEN30006 with JGameGrid (www.aplu.ch)");
 	    setStatusText("Initializing...");
 	    initPlayers(properties);
-	    initScores();
+	    //initScores();
 	    initScore();
 	    for (int i=0; i <nbRounds; i++) {
-	      initTricks();
+	      //initTricks();
 	      initRound();
 	      playRound();
 	      updateScores();
 	    };
 	    for (int i=0; i <nbPlayers; i++) updateScore(i);
 	    int maxScore = 0;
-	    for (int i = 0; i <nbPlayers; i++) if (scores[i] > maxScore) maxScore = scores[i];
+	    for (int i = 0; i <nbPlayers; i++) if (players.get(i).getScore() > maxScore) maxScore = players.get(i).getScore();
 	    Set <Integer> winners = new HashSet<Integer>();
-	    for (int i = 0; i <nbPlayers; i++) if (scores[i] == maxScore) winners.add(i);
+	    for (int i = 0; i <nbPlayers; i++) if (players.get(i).getScore() == maxScore) winners.add(i);
 	    String winText;
 	    if (winners.size() == 1) {
 	    	winText = "Game over. Winner is player: " +

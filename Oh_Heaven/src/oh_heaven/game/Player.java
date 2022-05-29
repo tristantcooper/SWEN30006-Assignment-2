@@ -7,11 +7,16 @@ public class Player {
 	public final boolean isNPC;
 	public final int id;
 	protected Hand hand;
-	protected final String playerType ;
+	protected int score;
+	protected int bid;
+	protected int tricks;
+	protected final String playerType;
 	
 	public Player(int id,  String playerType) {
 		this.id = id;
 		this.playerType = playerType;
+		score = 0;
+		tricks = 0;
 		
 		if (playerType.equals("human")) {
 			this.isNPC = false;}
@@ -25,6 +30,18 @@ public class Player {
 	protected void playCard(Card card) {
 		hand.remove(card, false);
 		//System.out.println("Player "+id+" now has hand: "+hand);
+	}
+	
+	public void updateScore() {
+		score += tricks;
+		if (tricks == bid) {
+			score += Oh_Heaven.getInstance().madeBidBonus;
+		}
+		tricks = 0;
+	}
+	
+	public void incrementScore(int value) {
+		score = score + value;
 	}
 	
 	public String getPlayerType() {
@@ -45,4 +62,25 @@ public class Player {
 	public Card placeFollowing() {
 		return null;
 	}
+
+	public int getBid() {
+		return bid;
+	}
+
+	public void setBid(int bid) {
+		this.bid = bid;
+	}
+
+	public int getScore() {
+		return score;
+	}
+
+	public int getTricks() {
+		return tricks;
+	}
+
+	public void wonTrick() {
+		tricks++;
+	}
+	
 }
